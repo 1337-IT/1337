@@ -3,6 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1C1BC75A-8DD1-4F70-A424-1BEEA4DF8657}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.Domain", "src\MerchStore.Domain\MerchStore.Domain.csproj", "{F023CFB9-20F6-45DF-8C33-FC384CDE9453}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.Application", "src\MerchStore.Application\MerchStore.Application.csproj", "{F0F9415C-A707-4119-AB24-00285F145E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.Infrastructure", "src\MerchStore.Infrastructure\MerchStore.Infrastructure.csproj", "{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.WebUI", "src\MerchStore.WebUI\MerchStore.WebUI.csproj", "{3B7E7109-254D-418B-88DE-765E5D386062}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -10,5 +20,29 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F023CFB9-20F6-45DF-8C33-FC384CDE9453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F023CFB9-20F6-45DF-8C33-FC384CDE9453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F023CFB9-20F6-45DF-8C33-FC384CDE9453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F023CFB9-20F6-45DF-8C33-FC384CDE9453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0F9415C-A707-4119-AB24-00285F145E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0F9415C-A707-4119-AB24-00285F145E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0F9415C-A707-4119-AB24-00285F145E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0F9415C-A707-4119-AB24-00285F145E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B7E7109-254D-418B-88DE-765E5D386062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B7E7109-254D-418B-88DE-765E5D386062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B7E7109-254D-418B-88DE-765E5D386062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B7E7109-254D-418B-88DE-765E5D386062}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F023CFB9-20F6-45DF-8C33-FC384CDE9453} = {1C1BC75A-8DD1-4F70-A424-1BEEA4DF8657}
+		{F0F9415C-A707-4119-AB24-00285F145E1D} = {1C1BC75A-8DD1-4F70-A424-1BEEA4DF8657}
+		{74BBF93F-B0FC-4C82-9750-6F7F6DBEDEC3} = {1C1BC75A-8DD1-4F70-A424-1BEEA4DF8657}
+		{3B7E7109-254D-418B-88DE-765E5D386062} = {1C1BC75A-8DD1-4F70-A424-1BEEA4DF8657}
 	EndGlobalSection
 EndGlobal
