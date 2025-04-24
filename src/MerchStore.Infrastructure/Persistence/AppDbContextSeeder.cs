@@ -60,36 +60,36 @@ public class AppDbContextSeeder
             var products = new List<Product>
             {
                 new Product(
-                    "Conference T-Shirt",
-                    "A comfortable cotton t-shirt with the conference logo.",
+                    "Casual Sports Cap",
+                    "A comfortable cap suits all weather conditions.",
                     // new Uri("https://example.com/images/tshirt.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
-                    Money.FromSEK(249.99m),
-                    50),
+                    new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap1.jpg"),
+                    Money.FromSEK(99.00m),
+                    10),
 
                 new Product(
-                    "Developer Mug",
-                    "A ceramic mug with a funny programming joke.",
+                    "Casual Sports Cap",
+                    "A comfortable cap suits all weather conditions.",
                     // new Uri("https://example.com/images/mug.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/mug.png"),
-                    Money.FromSEK(149.50m),
-                    100),
+                    new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap2.jpg"),
+                    Money.FromSEK(109.00m),
+                    20),
 
                 new Product(
-                    "Laptop Sticker Pack",
-                    "A set of 5 programming language stickers for your laptop.",
+                    "Stylish Sports Cap with Fire",
+                    "A Confortable cap suits while going out for Sport events.",
                     // new Uri("https://example.com/images/stickers.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/stickers.png"),
-                    Money.FromSEK(79.99m),
-                    200),
+                    new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap3.jpg"),
+                    Money.FromSEK(99.00m),
+                    0),
 
                 new Product(
-                    "Branded Hoodie",
-                    "A warm hoodie with the company logo, perfect for cold offices.",
+                    "Stylish Sports Cap with Minimalist Design",
+                    "A Confortable cap suits while going out for events.",
                     // new Uri("https://example.com/images/hoodie.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/hoodie.png"),
-                    Money.FromSEK(499.99m),
-                    25)
+                    new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap4.jpg"),
+                    Money.FromSEK(109.99m),
+                    15)
             };
 
             await _context.Products.AddRangeAsync(products);
