@@ -77,7 +77,7 @@ public class AppDbContextSeeder
 
                 new Product(
                     "Stylish Sports Cap - Fire Edition",
-                    "A Confortable cap suits while going out for Sport events.",
+                    "A Comfortable cap suits while going out for Sport events.",
                     // new Uri("https://example.com/images/stickers.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap3.jpg"),
                     Money.FromSEK(99.00m),
@@ -85,7 +85,7 @@ public class AppDbContextSeeder
 
                 new Product(
                     "Stylish Sports Cap - Minimalist Design",
-                    "A Confortable cap suits while going out for events.",
+                    "A Comfortable cap suits while going out for events.",
                     // new Uri("https://example.com/images/hoodie.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap4.jpg"),
                     Money.FromSEK(109.99m),
