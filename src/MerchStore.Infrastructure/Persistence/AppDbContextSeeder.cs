@@ -60,7 +60,7 @@ public class AppDbContextSeeder
             var products = new List<Product>
             {
                 new Product(
-                    "Casual Sports Cap",
+                    "Casual Sports Cap - Green Edition",
                     "A comfortable cap suits all weather conditions.",
                     // new Uri("https://example.com/images/tshirt.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap1.jpg"),
@@ -68,7 +68,7 @@ public class AppDbContextSeeder
                     10),
 
                 new Product(
-                    "Casual Sports Cap",
+                    "Casual Sports Cap - Grey Edition",
                     "A comfortable cap suits all weather conditions.",
                     // new Uri("https://example.com/images/mug.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap2.jpg"),
@@ -76,7 +76,7 @@ public class AppDbContextSeeder
                     20),
 
                 new Product(
-                    "Stylish Sports Cap with Fire",
+                    "Stylish Sports Cap - Fire Edition",
                     "A Confortable cap suits while going out for Sport events.",
                     // new Uri("https://example.com/images/stickers.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap3.jpg"),
@@ -84,7 +84,7 @@ public class AppDbContextSeeder
                     0),
 
                 new Product(
-                    "Stylish Sports Cap with Minimalist Design",
+                    "Stylish Sports Cap - Minimalist Design",
                     "A Confortable cap suits while going out for events.",
                     // new Uri("https://example.com/images/hoodie.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap4.jpg"),
