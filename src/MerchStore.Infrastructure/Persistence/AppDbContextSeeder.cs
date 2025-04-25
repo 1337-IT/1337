@@ -89,6 +89,22 @@ public class AppDbContextSeeder
                     // new Uri("https://example.com/images/hoodie.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap4.jpg"),
                     Money.FromSEK(109.99m),
+                    15),
+                
+                new Product(
+                    "Cowboy Hat featuring a 6 Logo",
+                    "A western charm with modern attitude.",
+                    // new Uri("https://example.com/images/hoodie.jpg"),
+                    new Uri("https://merchstoreblobstorage.blob.core.windows.net/hats/CowboyCream.png"),
+                    Money.FromSEK(159.99m),
+                    15),
+
+                new Product(
+                    "Sleek Black Cap Featuring Customized Logo",
+                    "Your style, your logo — fully customizable to make it uniquely yours.",
+                    // new Uri("https://example.com/images/hoodie.jpg"),
+                    new Uri("https://merchstoreblobstorage.blob.core.windows.net/hats/Customized logo black.png"),
+                    Money.FromSEK(199.99m),
                     15)
             };
 
