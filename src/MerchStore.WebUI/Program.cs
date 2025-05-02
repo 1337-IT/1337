@@ -12,6 +12,15 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
+
+// Add session support for cart management
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache(); // In-memory cache for session
+builder.Services.AddHttpContextAccessor(); // Access to HttpContext in services 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,6 +38,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Enable session support
+app.UseSession();
+
 
 app.UseAuthorization();
 
