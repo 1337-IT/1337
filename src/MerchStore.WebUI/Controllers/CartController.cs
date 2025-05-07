@@ -56,6 +56,21 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
+        // ✅ New: Update quantity for an item in the cart
+        [HttpPost]
+        public IActionResult Update(Guid productId, int quantity)
+        {
+            var cart = GetCart();
+            var item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item != null && quantity > 0)
+            {
+                item.Quantity = quantity;
+                SaveCart(cart);
+            }
+            
+            return RedirectToAction("Index");
+        }
+
         // Remove item from cart
         [HttpPost]
         public IActionResult Remove(Guid productId)
