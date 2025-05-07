@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Domain.Entities;
+using MerchStore.Application.Services.Interfaces;
 using System.Text.Json;
 
 namespace MerchStore.WebUI.Controllers
@@ -7,6 +8,12 @@ namespace MerchStore.WebUI.Controllers
     public class CartController : Controller
     {
         private const string CartSessionKey = "CartItems";
+        private readonly ICatalogService _catalogService;
+
+        public CartController(ICatalogService catalogService)
+        {
+            _catalogService = catalogService;
+        }
 
         // Load the cart from session
         private List<CartItem> GetCart()
@@ -31,10 +38,18 @@ namespace MerchStore.WebUI.Controllers
             return View(cart);
         }
 
-        // Add a product to cart (usually from a product detail page)
+        // ✅ Add a product to cart (with out-of-stock prevention)
         [HttpPost]
-        public IActionResult Add(Guid productId, string productName, decimal unitPrice, int quantity = 1)
+        public async Task<IActionResult> Add(Guid productId, string productName, decimal unitPrice, int quantity = 1)
         {
+            var product = await _catalogService.GetProductByIdAsync(productId);
+
+            if (product == null || product.StockQuantity <= 0)
+            {
+                TempData["Error"] = "Sorry, this product is out of stock and cannot be added.";
+                return RedirectToAction("Index");
+            }
+
             var cart = GetCart();
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
             if (existing != null)
@@ -45,9 +60,9 @@ namespace MerchStore.WebUI.Controllers
             {
                 cart.Add(new CartItem
                 {
-                    ProductId = productId,
-                    ProductName = productName,
-                    UnitPrice = unitPrice,
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    UnitPrice = product.Price.Amount,
                     Quantity = quantity
                 });
             }
@@ -56,7 +71,7 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✅ New: Update quantity for an item in the cart
+        // Update quantity for an item in the cart
         [HttpPost]
         public IActionResult Update(Guid productId, int quantity)
         {
@@ -67,7 +82,7 @@ namespace MerchStore.WebUI.Controllers
                 item.Quantity = quantity;
                 SaveCart(cart);
             }
-            
+
             return RedirectToAction("Index");
         }
 
@@ -93,20 +108,30 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Checkout action (to be implemented)
+        // Checkout
         public IActionResult Checkout()
         {
-               // Clear the cart after confirming order
-              SaveCart(new List<CartItem>());
-             TempData["Message"] = "Thank you for your order! Your cart has been cleared.";
-             return RedirectToAction("Confirmation");
+            SaveCart(new List<CartItem>());
+            TempData["Message"] = "Thank you for your order! Your cart has been cleared.";
+            return RedirectToAction("Confirmation");
         }
-        // Confirmation action (to be implemented)  
-         public IActionResult Confirmation()
-          {
-                // Show order confirmation details here
-                return View();
-          }
-       
+
+        // Confirmation
+        public IActionResult Confirmation()
+        {
+            return View();
+        }
+
+        // (Optional) Product Details
+        public async Task<IActionResult> ProductDetails(Guid id)
+        {
+            var product = await _catalogService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
     }
 }
