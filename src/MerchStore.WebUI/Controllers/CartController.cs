@@ -15,7 +15,7 @@ namespace MerchStore.WebUI.Controllers
             _catalogService = catalogService;
         }
 
-        // Load the cart from session
+        // Load cart from session
         private List<CartItem> GetCart()
         {
             var json = HttpContext.Session.GetString(CartSessionKey);
@@ -24,21 +24,21 @@ namespace MerchStore.WebUI.Controllers
                 : JsonSerializer.Deserialize<List<CartItem>>(json) ?? new List<CartItem>();
         }
 
-        // Save the cart to session
+        // Save cart to session
         private void SaveCart(List<CartItem> cart)
         {
             var json = JsonSerializer.Serialize(cart);
             HttpContext.Session.SetString(CartSessionKey, json);
         }
 
-        // Show the cart page
+        // Show cart page
         public IActionResult Index()
         {
             var cart = GetCart();
             return View(cart);
         }
 
-        // ✅ Add a product to cart (with out-of-stock prevention)
+        // ✅ Add to cart with stock check
         [HttpPost]
         public async Task<IActionResult> Add(Guid productId, string productName, decimal unitPrice, int quantity = 1)
         {
@@ -71,7 +71,7 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Update quantity for an item in the cart
+        // ✅ Update quantity
         [HttpPost]
         public IActionResult Update(Guid productId, int quantity)
         {
@@ -86,7 +86,7 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Remove item from cart
+        // ✅ Remove item
         [HttpPost]
         public IActionResult Remove(Guid productId)
         {
@@ -101,28 +101,38 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Clear the cart
+        // ✅ Clear cart
         public IActionResult Clear()
         {
             SaveCart(new List<CartItem>());
             return RedirectToAction("Index");
         }
 
-        // Checkout
+        // ✅ Checkout (save order summary to TempData)
         public IActionResult Checkout()
         {
+            var cart = GetCart();
+
+            if (!cart.Any())
+            {
+                TempData["Error"] = "Your cart is empty.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["OrderSummary"] = JsonSerializer.Serialize(cart);
             SaveCart(new List<CartItem>());
-            TempData["Message"] = "Thank you for your order! Your cart has been cleared.";
+
+            TempData["Message"] = "Thank you for your order!";
             return RedirectToAction("Confirmation");
         }
 
-        // Confirmation
+        // ✅ Confirmation (view will deserialize this)
         public IActionResult Confirmation()
         {
             return View();
         }
 
-        // (Optional) Product Details
+        // Optional product details view
         public async Task<IActionResult> ProductDetails(Guid id)
         {
             var product = await _catalogService.GetProductByIdAsync(id);
