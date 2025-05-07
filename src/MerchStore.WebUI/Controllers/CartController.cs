@@ -92,5 +92,21 @@ namespace MerchStore.WebUI.Controllers
             SaveCart(new List<CartItem>());
             return RedirectToAction("Index");
         }
+
+        // Checkout action (to be implemented)
+        public IActionResult Checkout()
+        {
+               // Clear the cart after confirming order
+              SaveCart(new List<CartItem>());
+             TempData["Message"] = "Thank you for your order! Your cart has been cleared.";
+             return RedirectToAction("Confirmation");
+        }
+        // Confirmation action (to be implemented)  
+         public IActionResult Confirmation()
+          {
+                // Show order confirmation details here
+                return View();
+          }
+       
     }
 }
