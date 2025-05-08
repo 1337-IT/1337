@@ -1,0 +1,12 @@
+### Get all products
+GET https://localhost:7295/api/basic/products
+
+### Get product by ID (replace with a valid ID)
+GET https://localhost:7295/api/basic/products/042a147c-fb08-4701-852c-3d98c9156ebb
+
+### Get product with invalid ID (404 response)
+GET https://localhost:7295/api/basic/products/00000000-0000-0000-0000-000000000000
+
+### Get all products (with valid API key)
+GET https://localhost:7295/api/basic/products
+X-API-Key: Merchstore_ApiKey
