@@ -1,12 +1,26 @@
 using System.Reflection;
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using MerchStore.WebUI.Authentication.ApiKey;
+using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add API Key authentication
+builder.Services.AddAuthentication()
+   .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
+
+// Add API Key authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiKeyPolicy", policy =>
+        policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+              .RequireAuthenticatedUser());
+});
 
 // Add Application services - this includes Services, Interfaces, etc.
 builder.Services.AddApplication();
@@ -37,6 +51,18 @@ builder.Services.AddSwaggerGen(options =>
     {
         options.IncludeXmlComments(xmlPath);
     }
+    // Add API Key authentication support to Swagger UI
+    options.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+    {
+        Description = "API Key Authentication. Enter your API key in the field below.",
+        Name = ApiKeyAuthenticationDefaults.HeaderName,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme
+    });
+
+    // Apply API key requirement only to controller-based endpoints
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
@@ -75,7 +101,10 @@ app.UseRouting();
 // Enable session support
 app.UseSession();
 
+// Add authentication middleware
+app.UseAuthentication();
 
+// Add authorization middleware
 app.UseAuthorization();
 
 app.MapStaticAssets();
