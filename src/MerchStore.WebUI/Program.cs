@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen(options =>
         Contact = new OpenApiContact
         {
             Name = "MerchStore Support",
-            Email = "support@merchstore.example.com"
+            Email = "support@merchstore.1337.se"
         }
     });
 
