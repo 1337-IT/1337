@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Checkout Confirmation";
+}
+
+
+
+<div class="mt-4 text-center">
+    <h2> Checkout Complete</h2>
+    <p>@TempData["Message"]</p>
+    <a class="btn btn-primary mt-3" asp-controller="Catalog" asp-action="Index">Continue Shopping</a>
+</div>
+

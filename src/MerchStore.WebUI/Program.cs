@@ -38,6 +38,14 @@ builder.Services.AddSwaggerGen(options =>
         options.IncludeXmlComments(xmlPath);
     }
 });
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
+
+// Add session support for cart management
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache(); // In-memory cache for session
+builder.Services.AddHttpContextAccessor(); // Access to HttpContext in services 
 
 var app = builder.Build();
 
@@ -63,6 +71,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Enable session support
+app.UseSession();
+
 
 app.UseAuthorization();
 
