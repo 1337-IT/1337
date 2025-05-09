@@ -33,7 +33,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ContactUs">Contact Us</a>
                         </li>
                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-controller="Cart" asp-action="Index">🛒 Cart <span class="badge bg-primary">@ViewBag.CartCount </span></a>
+                             <a class="nav-link text-dark"
+                                asp-controller="Cart"
+                                asp-action="Index">🛒 Cart <span id="cart-count" class="badge bg-primary">(@(ViewBag.CartCount ?? 0))</span></a>
+                         </li>
                     </ul>
                 </div>
             </div>

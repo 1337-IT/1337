@@ -50,7 +50,7 @@ namespace MerchStore.WebUI.Controllers
             var cart = GetCart();
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
 
-            if (existing != null)
+            if (existing is not null)
             {
                 existing.Quantity += quantity;
             }
@@ -67,6 +67,39 @@ namespace MerchStore.WebUI.Controllers
 
             SaveCart(cart);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddJson([FromBody] CartItem incoming)
+        {
+            var product = await _catalogService.GetProductByIdAsync(incoming.ProductId);
+
+            if (product is not { StockQuantity: > 0 })
+            {
+                return Json(new { success = false, message = "Out of stock." });
+            }
+
+            var cart = GetCart();
+            var existing = cart.FirstOrDefault(c => c.ProductId == incoming.ProductId);
+
+            if (existing is not null)
+            {
+                existing.Quantity += incoming.Quantity;
+            }
+            else
+            {
+                cart.Add(new CartItem
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    UnitPrice = product.Price.Amount,
+                    Quantity = incoming.Quantity
+                });
+            }
+
+            SaveCart(cart);
+            var totalItems = cart.Sum(x => x.Quantity);
+            return Json(new { success = true, cartCount = totalItems });
         }
 
         [HttpPost]

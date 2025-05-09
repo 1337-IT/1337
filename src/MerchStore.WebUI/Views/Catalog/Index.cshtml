@@ -52,12 +52,16 @@
                             <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">
                                 View Details
                             </a>
-                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
-                             <input type="hidden" name="productId" value="@product.Id" />
-                              <input type="hidden" name="productName" value="@product.Name" />
-                             <input type="hidden" name="unitPrice" value="@product.PriceAmount" />
-                              <input type="hidden" name="quantity" value="1" />
-                             <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
+                            
+                            <form class="add-to-cart-form d-inline"
+                                data-product-id="@product.Id"
+                                data-product-name="@product.Name"
+                                data-unit-price="@product.PriceAmount">
+                              <button type="submit" class="btn btn-sm btn-success add-to-cart-btn">
+                                Add to Cart
+                                </button>
+                           
+
                             </form>
 
                         </div>
