@@ -69,6 +69,40 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
+        // ✅ NEW: Add to cart via AJAX/JSON
+        [HttpPost]
+        public async Task<IActionResult> AddJson([FromBody] CartItem item)
+        {
+            var product = await _catalogService.GetProductByIdAsync(item.ProductId);
+
+            if (product is not { StockQuantity: > 0 })
+            {
+                return BadRequest(new { success = false, message = "Out of stock" });
+            }
+
+            var cart = GetCart();
+            var existing = cart.FirstOrDefault(c => c.ProductId == item.ProductId);
+            if (existing != null)
+            {
+                existing.Quantity += item.Quantity;
+            }
+            else
+            {
+                cart.Add(new CartItem
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    UnitPrice = product.Price.Amount,
+                    Quantity = item.Quantity
+                });
+            }
+
+            SaveCart(cart);
+
+            var cartCount = cart.Sum(c => c.Quantity);
+            return Ok(new { success = true, cartCount });
+        }
+
         [HttpPost]
         public IActionResult Update(Guid productId, int quantity)
         {
