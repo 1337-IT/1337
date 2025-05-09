@@ -1,58 +1,58 @@
-@using System.Text.Json
 @{
     ViewData["Title"] = "Order Confirmation";
 
-    var orderJson = TempData["OrderSummary"] as string;
-    var orderItems = string.IsNullOrEmpty(orderJson)
-        ? new List<OrderSummaryItem>()
-        : JsonSerializer.Deserialize<List<OrderSummaryItem>>(orderJson) ?? new List<OrderSummaryItem>();
+    var cartJson = TempData["OrderSummary"] as string;
+    var cartItems = string.IsNullOrEmpty(cartJson)
+        ? new List<MerchStore.Domain.Entities.CartItem>()
+        : System.Text.Json.JsonSerializer.Deserialize<List<MerchStore.Domain.Entities.CartItem>>(cartJson);
 
-    var message = TempData["Message"] as string ?? "Your order has been placed.";
-    var totalAmount = orderItems.Sum(i => i.TotalPrice);
+    var shippingAddress = TempData["Address"] as string;
+    decimal grandTotal = cartItems?.Sum(i => i.TotalPrice) ?? 0;
 }
 
-<div class="text-center mt-4">
-    <h2>🎉 Checkout Complete</h2>
-    <p class="lead">@message</p>
-</div>
+<div class="mt-4 text-center">
+    <h2>🎉 Order Confirmation</h2>
+    <p class="lead">@TempData["Message"]</p>
 
-@if (!orderItems.Any())
-{
-    <div class="alert alert-info text-center">
-        No order summary available.
-    </div>
-}
-else
-{
-    <table class="table table-bordered mt-4">
-        <thead class="table-light">
-            <tr>
-                <th>Product</th>
-                <th>Unit Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in orderItems)
-            {
+    @if (cartItems != null && cartItems.Any())
+    {
+        <h4 class="mt-4">🛒 Items You Ordered:</h4>
+        <table class="table table-striped mt-3">
+            <thead>
                 <tr>
-                    <td>@item.ProductName</td>
-                    <td>@item.UnitPrice.ToString("C")</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.TotalPrice.ToString("C")</td>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
                 </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr class="fw-bold">
-                <td colspan="3" class="text-end">Total:</td>
-                <td>@totalAmount.ToString("C")</td>
-            </tr>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in cartItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("C")</td>
+                        <td>@item.TotalPrice.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                    <td class="fw-bold">@grandTotal.ToString("C")</td>
+                </tr>
+            </tfoot>
+        </table>
+    }
 
-    <div class="text-center mt-4">
-        <a class="btn btn-primary" asp-controller="Catalog" asp-action="Index">🛍 Continue Shopping</a>
-    </div>
-}
+    @if (!string.IsNullOrEmpty(shippingAddress))
+    {
+        <h4 class="mt-4">📍 Shipping Address:</h4>
+        <p>@shippingAddress</p>
+    }
+
+    <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary mt-4">
+        🛍️ Continue Shopping
+    </a>
+</div>
