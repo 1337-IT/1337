@@ -50,7 +50,7 @@ namespace MerchStore.WebUI.Controllers
             var cart = GetCart();
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
 
-            if (existing != null)
+            if (existing is not null)
             {
                 existing.Quantity += quantity;
             }
@@ -69,22 +69,22 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✅ NEW: Add to cart via AJAX/JSON
         [HttpPost]
-        public async Task<IActionResult> AddJson([FromBody] CartItem item)
+        public async Task<IActionResult> AddJson([FromBody] CartItem incoming)
         {
-            var product = await _catalogService.GetProductByIdAsync(item.ProductId);
+            var product = await _catalogService.GetProductByIdAsync(incoming.ProductId);
 
             if (product is not { StockQuantity: > 0 })
             {
-                return BadRequest(new { success = false, message = "Out of stock" });
+                return Json(new { success = false, message = "Out of stock." });
             }
 
             var cart = GetCart();
-            var existing = cart.FirstOrDefault(c => c.ProductId == item.ProductId);
-            if (existing != null)
+            var existing = cart.FirstOrDefault(c => c.ProductId == incoming.ProductId);
+
+            if (existing is not null)
             {
-                existing.Quantity += item.Quantity;
+                existing.Quantity += incoming.Quantity;
             }
             else
             {
@@ -93,14 +93,13 @@ namespace MerchStore.WebUI.Controllers
                     ProductId = product.Id,
                     ProductName = product.Name,
                     UnitPrice = product.Price.Amount,
-                    Quantity = item.Quantity
+                    Quantity = incoming.Quantity
                 });
             }
 
             SaveCart(cart);
-
-            var cartCount = cart.Sum(c => c.Quantity);
-            return Ok(new { success = true, cartCount });
+            var totalItems = cart.Sum(x => x.Quantity);
+            return Json(new { success = true, cartCount = totalItems });
         }
 
         [HttpPost]
