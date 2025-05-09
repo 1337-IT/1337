@@ -1,12 +1,58 @@
 @{
-    ViewData["Title"] = "Checkout Confirmation";
+    ViewData["Title"] = "Order Confirmation";
+
+    var cartJson = TempData["OrderSummary"] as string;
+    var cartItems = string.IsNullOrEmpty(cartJson)
+        ? new List<MerchStore.Domain.Entities.CartItem>()
+        : System.Text.Json.JsonSerializer.Deserialize<List<MerchStore.Domain.Entities.CartItem>>(cartJson);
+
+    var shippingAddress = TempData["Address"] as string;
+    decimal grandTotal = cartItems?.Sum(i => i.TotalPrice) ?? 0;
 }
 
-
-
 <div class="mt-4 text-center">
-    <h2> Checkout Complete</h2>
-    <p>@TempData["Message"]</p>
-    <a class="btn btn-primary mt-3" asp-controller="Catalog" asp-action="Index">Continue Shopping</a>
-</div>
+    <h2>🎉 Order Confirmation</h2>
+    <p class="lead">@TempData["Message"]</p>
 
+    @if (cartItems != null && cartItems.Any())
+    {
+        <h4 class="mt-4">🛒 Items You Ordered:</h4>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in cartItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("C")</td>
+                        <td>@item.TotalPrice.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                    <td class="fw-bold">@grandTotal.ToString("C")</td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+
+    @if (!string.IsNullOrEmpty(shippingAddress))
+    {
+        <h4 class="mt-4">📍 Shipping Address:</h4>
+        <p>@shippingAddress</p>
+    }
+
+    <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary mt-4">
+        🛍️ Continue Shopping
+    </a>
+</div>

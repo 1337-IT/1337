@@ -1,14 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Domain.Entities;
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.WebUI.Models.Cart;
 using System.Text.Json;
 
 namespace MerchStore.WebUI.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private const string CartSessionKey = "CartItems";
+        private readonly ICatalogService _catalogService;
 
-        // Load the cart from session
+        public CartController(ICatalogService catalogService)
+        {
+            _catalogService = catalogService;
+        }
+
         private List<CartItem> GetCart()
         {
             var json = HttpContext.Session.GetString(CartSessionKey);
@@ -17,26 +24,32 @@ namespace MerchStore.WebUI.Controllers
                 : JsonSerializer.Deserialize<List<CartItem>>(json) ?? new List<CartItem>();
         }
 
-        // Save the cart to session
         private void SaveCart(List<CartItem> cart)
         {
             var json = JsonSerializer.Serialize(cart);
             HttpContext.Session.SetString(CartSessionKey, json);
         }
 
-        // Show the cart page
         public IActionResult Index()
         {
             var cart = GetCart();
             return View(cart);
         }
 
-        // Add a product to cart (usually from a product detail page)
         [HttpPost]
-        public IActionResult Add(Guid productId, string productName, decimal unitPrice, int quantity = 1)
+        public async Task<IActionResult> Add(Guid productId, string productName, decimal unitPrice, int quantity = 1)
         {
+            var product = await _catalogService.GetProductByIdAsync(productId);
+
+            if (product is not { StockQuantity: > 0 })
+            {
+                TempData["Error"] = "Sorry, this product is out of stock.";
+                return RedirectToAction("Index");
+            }
+
             var cart = GetCart();
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
+
             if (existing != null)
             {
                 existing.Quantity += quantity;
@@ -45,9 +58,9 @@ namespace MerchStore.WebUI.Controllers
             {
                 cart.Add(new CartItem
                 {
-                    ProductId = productId,
-                    ProductName = productName,
-                    UnitPrice = unitPrice,
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    UnitPrice = product.Price.Amount,
                     Quantity = quantity
                 });
             }
@@ -56,28 +69,28 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // ✅ New: Update quantity for an item in the cart
         [HttpPost]
         public IActionResult Update(Guid productId, int quantity)
         {
             var cart = GetCart();
             var item = cart.FirstOrDefault(c => c.ProductId == productId);
-            if (item != null && quantity > 0)
+
+            if (item is not null && quantity > 0)
             {
                 item.Quantity = quantity;
                 SaveCart(cart);
             }
-            
+
             return RedirectToAction("Index");
         }
 
-        // Remove item from cart
         [HttpPost]
         public IActionResult Remove(Guid productId)
         {
             var cart = GetCart();
             var item = cart.FirstOrDefault(c => c.ProductId == productId);
-            if (item != null)
+
+            if (item is not null)
             {
                 cart.Remove(item);
                 SaveCart(cart);
@@ -86,27 +99,57 @@ namespace MerchStore.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Clear the cart
         public IActionResult Clear()
         {
             SaveCart(new List<CartItem>());
             return RedirectToAction("Index");
         }
 
-        // Checkout action (to be implemented)
+        [HttpGet]
         public IActionResult Checkout()
         {
-               // Clear the cart after confirming order
-              SaveCart(new List<CartItem>());
-             TempData["Message"] = "Thank you for your order! Your cart has been cleared.";
-             return RedirectToAction("Confirmation");
+            var cart = GetCart();
+
+            if (!cart.Any())
+            {
+                TempData["Error"] = "Your cart is empty.";
+                return RedirectToAction("Index");
+            }
+
+            return View("CheckoutForm", new CheckoutViewModel());
         }
-        // Confirmation action (to be implemented)  
-         public IActionResult Confirmation()
-          {
-                // Show order confirmation details here
-                return View();
-          }
-       
+
+        [HttpPost]
+        public IActionResult Checkout(CheckoutViewModel model)
+        {
+            var cart = GetCart();
+
+            if (!cart.Any())
+            {
+                TempData["Error"] = "Your cart is empty.";
+                return RedirectToAction("Index");
+            }
+
+            var name = model.FullName;
+            var address = $"{model.AddressLine1}, {model.City}, {model.PostalCode}, {model.Country}";
+
+            TempData["OrderSummary"] = JsonSerializer.Serialize(cart);
+            TempData["Message"] = $"Thank you for your order, {name}!";
+            TempData["Address"] = address;
+
+            SaveCart(new List<CartItem>());
+            return RedirectToAction("Confirmation");
+        }
+
+        public IActionResult Confirmation()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> ProductDetails(Guid id)
+        {
+            var product = await _catalogService.GetProductByIdAsync(id);
+            return product is null ? NotFound() : View(product);
+        }
     }
 }

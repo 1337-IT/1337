@@ -4,7 +4,7 @@ using MerchStore.WebUI.Models.Catalog;
 
 namespace MerchStore.WebUI.Controllers;
 
-public class CatalogController : Controller
+public class CatalogController : BaseController
 {
     private readonly ICatalogService _catalogService;
 

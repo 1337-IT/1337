@@ -1,0 +1,39 @@
+@model MerchStore.WebUI.Models.Cart.CheckoutViewModel 
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2 class="mt-4">🧾 Enter Your Details</h2>
+
+<form asp-action="Checkout" method="post">
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="AddressLine1" class="form-label"></label>
+        <input asp-for="AddressLine1" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="AddressLine2" class="form-label"></label>
+        <input asp-for="AddressLine2" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="City" class="form-label"></label>
+        <input asp-for="City" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="PostalCode" class="form-label"></label>
+        <input asp-for="PostalCode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Country" class="form-label"></label>
+        <input asp-for="Country" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Confirm Order</button>
+</form>
