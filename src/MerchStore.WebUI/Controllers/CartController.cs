@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace MerchStore.WebUI.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private const string CartSessionKey = "CartItems";
         private readonly ICatalogService _catalogService;
