@@ -35,7 +35,8 @@
                         <li class="nav-item">
                              <a class="nav-link text-dark"
                                 asp-controller="Cart"
-                                asp-action="Index">🛒 Cart <span id="cart-count" class="badge bg-primary">(@(ViewBag.CartCount ?? 0))</span></a>
+                                asp-action="Index">
+                                🛒 Cart <span id="cart-count" class="badge bg-primary">@(ViewBag.CartCount ?? 0)</span> </a>
                          </li>
                     </ul>
                 </div>

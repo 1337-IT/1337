@@ -53,16 +53,12 @@
                                 View Details
                             </a>
                             
-                            <form class="add-to-cart-form d-inline"
-                                data-product-id="@product.Id"
-                                data-product-name="@product.Name"
-                                data-unit-price="@product.PriceAmount">
-                              <button type="submit" class="btn btn-sm btn-success add-to-cart-btn">
-                                Add to Cart
-                                </button>
-                           
-
-                            </form>
+                        <form class="add-to-cart-form d-inline"
+                            data-product-id="@product.Id"
+                            data-product-name="@product.Name"
+                            data-unit-price="@product.PriceAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                          <button type="submit" class="btn btn-sm btn-success add-to-cart-btn">Add to Cart</button>
+                        </form>
 
                         </div>
                     </div>

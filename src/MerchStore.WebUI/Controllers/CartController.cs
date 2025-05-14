@@ -70,9 +70,16 @@ namespace MerchStore.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddJson([FromBody] CartItem incoming)
+        public async Task<IActionResult> AddJson([FromBody] AddToCartDto incoming)
         {
+            Console.WriteLine($"DEBUG: ProductId = {incoming.ProductId}");
+            Console.WriteLine($"DEBUG: ProductName = {incoming.ProductName}");
+            Console.WriteLine($"DEBUG: UnitPrice = {incoming.UnitPrice}");
+            Console.WriteLine($"DEBUG: Quantity = {incoming.Quantity}");
+
             var product = await _catalogService.GetProductByIdAsync(incoming.ProductId);
+
+            Console.WriteLine($"DEBUG: Retrieved = {product?.Name}, Stock = {product?.StockQuantity}");
 
             if (product is not { StockQuantity: > 0 })
             {
