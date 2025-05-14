@@ -14,10 +14,14 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
     where TEntity : Entity<TId>
     where TId : notnull
 {
-    // The DbContext instance - protected so derived classes can access it
+    /// <summary>
+    /// The DbContext instance - protected so derived classes can access it
+    /// </summary>
     protected readonly AppDbContext _context;
 
-    // DbSet for the specific entity type
+    /// <summary>
+    /// The DbSet for the specific entity type
+    /// </summary>
     protected readonly DbSet<TEntity> _dbSet;
 
     /// <summary>
@@ -27,14 +31,14 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
     public Repository(AppDbContext context)
     {
         _context = context;
-        _dbSet = context.Set<TEntity>(); // Get the DbSet for this entity type
+        _dbSet = context.Set<TEntity>();
     }
 
     /// <summary>
     /// Retrieves an entity by its ID
     /// </summary>
     /// <param name="id">The entity's ID</param>
-    /// <returns>The entity if found, null otherwise</returns>
+    /// <returns>The entity if found, or null otherwise</returns>
     public virtual async Task<TEntity?> GetByIdAsync(TId id)
     {
         return await _dbSet.FindAsync(id);
@@ -64,7 +68,6 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
     /// <param name="entity">The entity to update</param>
     public virtual Task UpdateAsync(TEntity entity)
     {
-        // Mark the entity as modified
         _context.Entry(entity).State = EntityState.Modified;
         return Task.CompletedTask;
     }
@@ -78,4 +81,9 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         _dbSet.Remove(entity);
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Gives derived classes access to the DbSet if needed
+    /// </summary>
+    protected DbSet<TEntity> DbSet => _dbSet;
 }
