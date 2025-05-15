@@ -38,7 +38,7 @@
 
                     showToast("✔️ Added to cart!", "success");
                 } else {
-                    showToast("❌ Error adding to cart!", "error");
+                    showToast("❌ Error adding to cart! - NOT in stock", "error");
                 }
             })
             .catch(err => {
