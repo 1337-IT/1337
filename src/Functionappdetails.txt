@@ -1,0 +1,4 @@
+Function App Name: ReviewApiFunc250514
+API Key: reviewmockapikey
+
+URL: https://reviewapifunc250514.azurewebsites.net/api/products/d5a3876b-c11a-4171-ade2-ae6302c80ef0/reviews?code=reviewmockapikey
