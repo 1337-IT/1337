@@ -6,6 +6,8 @@ using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
 using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeeder
+using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,10 @@ builder.Services.AddAuthorization(options =>
 // Application & Infrastructure
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddSingleton<MerchStore.Infrastructure.Storage.BlobStorageService>();
+
+
 
 // Log the current repository mode
 if (builder.Configuration.GetValue<bool>("UseInMemoryDb"))
@@ -80,6 +86,20 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication("AdminCookie")
+    .AddCookie("AdminCookie", options =>
+    {
+        options.LoginPath = "/Admin/Login";
+        options.AccessDeniedPath = "/Admin/AccessDenied";
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
 
 var app = builder.Build();
 

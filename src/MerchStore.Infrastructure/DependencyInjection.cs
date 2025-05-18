@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using MerchStore.Infrastructure.ExternalServices.Reviews;
 using MerchStore.Application.Common.Interfaces; // ✅ For ICatalogSeeder
 using MerchStore.Infrastructure.Seeders;        // ✅ For CatalogSeeder
+using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 namespace MerchStore.Infrastructure;
 
@@ -15,6 +16,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<CosmosDbSettings>(configuration.GetSection("CosmosDbSettings"));
+        services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage")); // ✅ Add blob storage config
 
         var useInMemory = configuration.GetValue<bool>("UseInMemoryDb");
 
@@ -36,6 +38,9 @@ public static class DependencyInjection
 
         // ✅ Register seeder here
         services.AddScoped<ICatalogSeeder, CatalogSeeder>();
+
+        // ✅ Register blob upload service
+        services.AddScoped<BlobStorageService>();
 
         return services;
     }

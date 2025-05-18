@@ -13,7 +13,7 @@ public interface ICatalogService
     /// </summary>
     /// <returns>A collection of all products</returns>
     Task<IEnumerable<Product>> GetAllProductsAsync();
-
+    Task AddProductAsync(Product product);
     /// <summary>
     /// Gets a product by its unique identifier
     /// </summary>
