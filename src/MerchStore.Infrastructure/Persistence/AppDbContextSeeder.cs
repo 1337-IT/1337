@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MerchStore.Domain.Entities;
-using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -14,29 +13,17 @@ public class AppDbContextSeeder
     private readonly ILogger<AppDbContextSeeder> _logger;
     private readonly AppDbContext _context;
 
-    /// <summary>
-    /// Constructor that accepts the context and a logger
-    /// </summary>
-    /// <param name="context">The database context to seed</param>
-    /// <param name="logger">The logger for logging seed operations</param>
     public AppDbContextSeeder(AppDbContext context, ILogger<AppDbContextSeeder> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Seeds the database with initial data
-    /// </summary>
     public virtual async Task SeedAsync()
     {
         try
         {
-            // Ensure the database is created (only needed for in-memory database)
-            // For SQL Server, you would use migrations instead
             await _context.Database.EnsureCreatedAsync();
-
-            // Seed products if none exist
             await SeedProductsAsync();
         }
         catch (Exception ex)
@@ -46,65 +33,54 @@ public class AppDbContextSeeder
         }
     }
 
-    /// <summary>
-    /// Seeds the database with sample products
-    /// </summary>
     private async Task SeedProductsAsync()
     {
-        // Check if we already have products (to avoid duplicate seeding)
         if (!await _context.Products.AnyAsync())
         {
             _logger.LogInformation("Seeding products...");
 
-            // Add sample products
             var products = new List<Product>
             {
                 new Product(
                     "Casual Sports Cap - Green Edition",
                     "A comfortable cap suits all weather conditions.",
-                    // new Uri("https://example.com/images/tshirt.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap1.jpg"),
-                    Money.FromSEK(99.00m),
+                    99.00m,
                     10),
 
                 new Product(
                     "Casual Sports Cap - Grey Edition",
                     "A comfortable cap suits all weather conditions.",
-                    // new Uri("https://example.com/images/mug.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap2.jpg"),
-                    Money.FromSEK(109.00m),
+                    109.00m,
                     20),
 
                 new Product(
                     "Stylish Sports Cap - Fire Edition",
                     "A Comfortable cap suits while going out for Sport events.",
-                    // new Uri("https://example.com/images/stickers.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap3.jpg"),
-                    Money.FromSEK(99.00m),
+                    99.00m,
                     0),
 
                 new Product(
                     "Stylish Sports Cap - Minimalist Design",
                     "A Comfortable cap suits while going out for events.",
-                    // new Uri("https://example.com/images/hoodie.jpg"),
                     new Uri("https://1337itblob.blob.core.windows.net/merchstore/cap4.jpg"),
-                    Money.FromSEK(109.99m),
+                    109.99m,
                     15),
-                
+
                 new Product(
                     "Cowboy Hat featuring a 6 Logo",
                     "A western charm with modern attitude.",
-                    // new Uri("https://example.com/images/hoodie.jpg"),
                     new Uri("https://merchstoreblobstorage.blob.core.windows.net/hats/CowboyCream.png"),
-                    Money.FromSEK(159.99m),
+                    159.99m,
                     15),
 
                 new Product(
                     "Sleek Black Cap Featuring Customized Logo",
                     "Your style, your logo — fully customizable to make it uniquely yours.",
-                    // new Uri("https://example.com/images/hoodie.jpg"),
-                    new Uri("https://merchstoreblobstorage.blob.core.windows.net/hats/Customized logo black.png"),
-                    Money.FromSEK(199.99m),
+                    new Uri("https://merchstoreblobstorage.blob.core.windows.net/hats/Customized%20logo%20black.png"),
+                    199.99m,
                     15)
             };
 

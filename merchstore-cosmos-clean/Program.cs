@@ -5,17 +5,17 @@ using MerchStore.Infrastructure;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
-using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeeder
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
-    options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
+    {
+        // Use snake_case for JSON serialization
+        options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Add API Key authentication
 builder.Services.AddAuthentication()
@@ -29,20 +29,13 @@ builder.Services.AddAuthorization(options =>
               .RequireAuthenticatedUser());
 });
 
-// Application & Infrastructure
+// Add Application services - this includes Services, Interfaces, etc.
 builder.Services.AddApplication();
+
+// Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Log the current repository mode
-if (builder.Configuration.GetValue<bool>("UseInMemoryDb"))
-    Console.WriteLine("🧪 Using In-Memory Product Repository");
-else
-    Console.WriteLine("🌐 Using Azure Cosmos DB (Mongo API)");
-
-// 🔧 Register HttpClient for ExternalReviewRepository
-builder.Services.AddHttpClient();
-
-// Swagger
+// Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -58,13 +51,14 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
+    // Include XML comments if you've enabled XML documentation in your project
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
     {
         options.IncludeXmlComments(xmlPath);
     }
-
+    // Add API Key authentication support to Swagger UI
     options.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Description = "API Key Authentication. Enter your API key in the field below.",
@@ -74,44 +68,58 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme
     });
 
+    // Apply API key requirement only to controller-based endpoints
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
-builder.Services.AddHttpContextAccessor();
+
+
+// Add session support for cart management
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache(); // In-memory cache for session
+builder.Services.AddHttpContextAccessor(); // Access to HttpContext in services 
 
 var app = builder.Build();
 
-// 🌱 Seed Cosmos DB in Development (only when not using in-memory)
-if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("UseInMemoryDb"))
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var seeder = scope.ServiceProvider.GetRequiredService<ICatalogSeeder>();
-    await seeder.SeedAsync();
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+else
+{
+    // In development, seed the database with test data using the extension method
+    app.Services.SeedDatabaseAsync().Wait();
 
+    // Enable Swagger UI in development
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
     });
 }
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Enable session support
 app.UseSession();
+
+// Add authentication middleware
 app.UseAuthentication();
+
+// Add authorization middleware
 app.UseAuthorization();
+
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();

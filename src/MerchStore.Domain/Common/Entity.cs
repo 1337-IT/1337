@@ -1,12 +1,17 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace MerchStore.Domain.Common;
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
 {
-    public TId Id { get; protected set; }
+    [BsonId]
+    [BsonElement("id")] // MongoDB expects the field to be called "id"
+    [BsonRepresentation(BsonType.String)] // Important for Cosmos DB string-based shard key
+    public virtual TId Id { get; protected set; }
 
     protected Entity(TId id)
     {
-        // Basic validation, can be expanded
         if (EqualityComparer<TId>.Default.Equals(id, default))
         {
             throw new ArgumentException("The entity ID cannot be the default value.", nameof(id));
@@ -14,10 +19,10 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
         Id = id;
     }
 
-    // Required for EF Core, even if using private setters elsewhere
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    // Required for EF Core (and MongoDB deserialization)
+    #pragma warning disable CS8618
     protected Entity() { }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    #pragma warning restore CS8618
 
     public override bool Equals(object? obj)
     {

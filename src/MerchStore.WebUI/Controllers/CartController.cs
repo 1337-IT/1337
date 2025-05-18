@@ -60,7 +60,7 @@ namespace MerchStore.WebUI.Controllers
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price.Amount,
+                    UnitPrice = product.Price,
                     Quantity = quantity
                 });
             }
@@ -99,7 +99,7 @@ namespace MerchStore.WebUI.Controllers
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price.Amount,
+                    UnitPrice = product.Price,
                     Quantity = incoming.Quantity
                 });
             }
