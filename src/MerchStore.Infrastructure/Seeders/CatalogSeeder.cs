@@ -70,3 +70,4 @@ public class CatalogSeeder : ICatalogSeeder
         _logger.LogInformation("✅ Seeded 6 products into Cosmos DB.");
     }
 }
+
