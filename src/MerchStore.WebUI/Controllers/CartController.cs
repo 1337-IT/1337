@@ -44,6 +44,7 @@ namespace MerchStore.WebUI.Controllers
             if (product is not { StockQuantity: > 0 })
             {
                 TempData["ToastMessage"] = "❌ Sorry, this product is out of stock.";
+                //return Redirect(Request.Headers["Referer"].ToString());
                 return RedirectToAction("Index");
             }
 
@@ -67,8 +68,8 @@ namespace MerchStore.WebUI.Controllers
 
             SaveCart(cart);
             TempData["ToastMessage"] = "✔️ Added to cart!";
-            return RedirectToAction("Index");
-
+            return Redirect(Request.Headers["Referer"].ToString());
+            
         }
 
         [HttpPost]
