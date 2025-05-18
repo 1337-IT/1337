@@ -4,6 +4,32 @@
     ViewData["Title"] = "Shopping Cart";
 }
 
+@if (TempData["ToastMessage"] is string msg)
+{
+    <div id="toast-message"
+         class="alert alert-success fw-bold text-center"
+         style="position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+                z-index: 9999; padding: 12px 20px; border-radius: 6px; min-width: 300px;
+                transition: opacity 0.5s ease;">
+        @msg
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var toast = document.getElementById('toast-message');
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(function () {
+                    toast.style.display = 'none';
+                }, 500); // Wait for fade out before hiding
+            }
+        }, 3000); // 3 seconds before fade out
+    </script>
+}
+
+
+
+
 <h2 class="mt-4">🛒 Your Shopping Cart</h2>
 
 @if (TempData["Error"] is not null)
