@@ -41,7 +41,7 @@
                              <a class="nav-link text-dark"
                                 asp-controller="Cart"
                                 asp-action="Index">
-                                🛒 Cart <span id="cart-count" class="badge bg-primary">@(ViewBag.CartCount ?? 0)</span> </a>
+                                🛒 Cart <span id="cart-count" class="badge bg-primary">@((ViewBag.CartCount is int count && count > 0) ? count.ToString() : "")</span> </a>
                          </li>
                         
                         @* ✅ Show Admin link only if not logged in. Show Logout if authenticated *@
