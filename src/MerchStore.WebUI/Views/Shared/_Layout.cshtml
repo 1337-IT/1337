@@ -41,8 +41,32 @@
                              <a class="nav-link text-dark"
                                 asp-controller="Cart"
                                 asp-action="Index">
-                                🛒 Cart <span id="cart-count" class="badge bg-primary">@(ViewBag.CartCount ?? 0)</span> </a>
+                                🛒 Cart <span id="cart-count" class="badge bg-primary">@((ViewBag.CartCount is int count && count > 0) ? count.ToString() : "")</span> </a>
                          </li>
+                        
+                        @* ✅ Show Admin link only if not logged in. Show Logout if authenticated *@
+@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+{
+    <li class="nav-item">
+    <a class="nav-link text-success" asp-controller="Admin" asp-action="AddProduct">
+        👋 Welcome, Admin
+    </a>
+</li>
+
+    <li class="nav-item">
+        <form method="post" asp-controller="Admin" asp-action="Logout" class="d-inline">
+            <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Login">Admin</a>
+    </li>
+}
+
+                        
                     </ul>
                 </div>
             </div>

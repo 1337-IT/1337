@@ -30,7 +30,7 @@ public class CatalogController : BaseController
                     ? p.Description.Substring(0, 97) + "..."
                     : p.Description,
                 FormattedPrice = p.Price.ToString(),
-                PriceAmount = p.Price,
+                PriceAmount = p.Price.Amount,
                 ImageUrl = p.ImageUrl?.ToString(),
                 StockQuantity = p.StockQuantity
             }).ToList();
@@ -76,7 +76,7 @@ public class CatalogController : BaseController
                 Name = product.Name,
                 Description = product.Description,
                 FormattedPrice = product.Price.ToString(),
-                PriceAmount = product.Price,
+                PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
                 StockQuantity = product.StockQuantity
             };

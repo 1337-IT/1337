@@ -22,8 +22,4 @@ public class CatalogService : ICatalogService
     {
         return await _productRepository.GetByIdAsync(productId);
     }
-    public async Task AddProductAsync(Product product)
-    {
-        await _productRepository.AddAsync(product);
-    }
 }

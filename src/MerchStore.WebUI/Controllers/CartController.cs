@@ -43,7 +43,8 @@ namespace MerchStore.WebUI.Controllers
 
             if (product is not { StockQuantity: > 0 })
             {
-                TempData["Error"] = "Sorry, this product is out of stock.";
+                TempData["ToastMessage"] = "❌ Sorry, this product is out of stock.";
+                //return Redirect(Request.Headers["Referer"].ToString());
                 return RedirectToAction("Index");
             }
 
@@ -60,13 +61,15 @@ namespace MerchStore.WebUI.Controllers
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price.Amount,
+                    UnitPrice = product.Price,
                     Quantity = quantity
                 });
             }
 
             SaveCart(cart);
-            return RedirectToAction("Index");
+            TempData["ToastMessage"] = "✔️ Added to cart!";
+            return Redirect(Request.Headers["Referer"].ToString());
+            
         }
 
         [HttpPost]
@@ -99,7 +102,7 @@ namespace MerchStore.WebUI.Controllers
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price.Amount,
+                    UnitPrice = product.Price,
                     Quantity = incoming.Quantity
                 });
             }

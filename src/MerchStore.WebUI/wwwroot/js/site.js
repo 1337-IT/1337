@@ -1,4 +1,5 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿/*
+document.addEventListener("DOMContentLoaded", function () {
     const forms = document.querySelectorAll(".add-to-cart-form");
 
     forms.forEach(form => {
@@ -70,3 +71,4 @@ function showToast(message, type = "success") {
         toast.remove();
     }, 2500);
 }
+*/
