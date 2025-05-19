@@ -5,6 +5,7 @@ using MerchStore.Infrastructure.Persistence.Repositories;
 using MerchStore.Infrastructure.Persistence;
 using Microsoft.Extensions.Options;
 using MerchStore.Infrastructure.ExternalServices.Reviews;
+using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations; // ✅ For ReviewApiOptions
 using MerchStore.Application.Common.Interfaces; // ✅ For ICatalogSeeder
 using MerchStore.Infrastructure.Seeders;        // ✅ For CatalogSeeder
 using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
@@ -17,6 +18,8 @@ public static class DependencyInjection
     {
         services.Configure<CosmosDbSettings>(configuration.GetSection("CosmosDbSettings"));
         services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage")); // ✅ Add blob storage config
+        services.Configure<ReviewApiOptions>(configuration.GetSection("ReviewApi")); // ✅ Add review API config
+
 
         var useInMemory = configuration.GetValue<bool>("UseInMemoryDb");
 
