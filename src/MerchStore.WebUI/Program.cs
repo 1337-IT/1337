@@ -9,7 +9,14 @@ using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeed
 using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
