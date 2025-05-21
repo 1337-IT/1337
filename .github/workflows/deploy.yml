@@ -9,6 +9,7 @@ env:
   AZURE_WEBAPP_NAME: fanta-stick-six
   AZURE_RESOURCE_GROUP: MerchStoreRG-deployment
   DOCKER_IMAGE: muhammadaamir11/merchstore
+  AZURE_KEYVAULT_NAME: merchstorekeyvault123456
 
 jobs:
   build-and-deploy:
@@ -30,6 +31,27 @@ jobs:
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 🔐 Fetch secrets from Azure Key Vault
+      uses: azure/get-keyvault-secrets@v1
+      with:
+        keyvault: ${{ env.AZURE_KEYVAULT_NAME }}
+        secrets: |
+          CosmosDbSettings--ConnectionString
+          BlobStorage--ConnectionString
+          ReviewApi--ApiKey
+          ApiKey--Value
+
+    - name: ⚙️ Set App Settings
+      run: |
+        az webapp config appsettings set \
+          --name $AZURE_WEBAPP_NAME \
+          --resource-group $AZURE_RESOURCE_GROUP \
+          --settings \
+          CosmosDbSettings__ConnectionString="${{ env.CosmosDbSettings__ConnectionString }}" \
+          BlobStorage__ConnectionString="${{ env.BlobStorage__ConnectionString }}" \
+          ReviewApi__ApiKey="${{ env.ReviewApi__ApiKey }}" \
+          ApiKey__Value="${{ env.ApiKey__Value }}"
 
     - name: 🚀 Deploy to Azure App Service
       run: |
