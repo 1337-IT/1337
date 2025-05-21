@@ -34,6 +34,7 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
         subscription-id: ebf4cdce-6bba-439a-9488-21fee9cde190
+        auth-type: servicePrincipal
 
     - name: 🔐 Fetch secrets from Azure Key Vault
       uses: azure/get-keyvault-secrets@v1
