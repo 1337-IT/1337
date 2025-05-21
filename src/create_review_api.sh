@@ -27,7 +27,7 @@ az storage account create --name $STORAGE_ACCOUNT_NAME --location $LOCATION \
                         --sku Standard_LRS \
                         --allow-blob-public-access false
 
-# Create Function App and link to Storage Account
+# Create Function App and link to Storage Accounts
 echo "Creating Function App: $FUNCTION_APP_NAME..."
 az functionapp create --name $FUNCTION_APP_NAME \
                     --resource-group $RESOURCE_GROUP \
