@@ -20,7 +20,7 @@ builder.Configuration
     .AddEnvironmentVariables();
 
 // Add Azure Key Vault configuration
-var keyVaultEndpoint = new Uri($"https://fanta-stick6-vault.vault.azure.net/");
+var keyVaultEndpoint = new Uri($"https://merchstorekeyvault123456.vault.azure.net/");
 builder.Configuration.AddAzureKeyVault(
     keyVaultEndpoint,
     new DefaultAzureCredential());
