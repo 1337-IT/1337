@@ -15,7 +15,7 @@ public class ReviewsController : Controller
         _catalogService = catalogService;
     }
 
-    // GET: Reviews
+    // GET: Reviewss
     public async Task<IActionResult> Index()
     {
         try
