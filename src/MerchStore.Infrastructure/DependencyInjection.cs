@@ -44,6 +44,7 @@ public static class DependencyInjection
 
         // ✅ Register blob upload service
         services.AddScoped<BlobStorageService>();
+        
 
         return services;
     }
