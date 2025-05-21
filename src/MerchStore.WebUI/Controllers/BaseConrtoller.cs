@@ -11,6 +11,7 @@ namespace MerchStore.WebUI.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+
             var json = HttpContext.Session.GetString(CartSessionKey);
             var cart = string.IsNullOrEmpty(json)
                 ? new List<CartItem>()
