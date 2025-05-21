@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  AZURE_WEBAPP_NAME: fanta-stick6
+  AZURE_WEBAPP_NAME: fanta-stick-six
   AZURE_RESOURCE_GROUP: MerchStoreRG-deployment
   DOCKER_IMAGE: muhammadaamir11/merchstore
 
@@ -36,4 +36,4 @@ jobs:
         az webapp config container set \
           --name $AZURE_WEBAPP_NAME \
           --resource-group $AZURE_RESOURCE_GROUP \
-          --docker-custom-image-name $DOCKER_IMAGE:latest
+          --docker-image-name $DOCKER_IMAGE:latest
