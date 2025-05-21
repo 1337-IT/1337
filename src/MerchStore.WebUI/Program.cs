@@ -13,7 +13,18 @@ using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
+// Add Azure Key Vault configuration
+var keyVaultEndpoint = new Uri($"https://fanta-stick6-vault.vault.azure.net/");
+builder.Configuration.AddAzureKeyVault(
+    keyVaultEndpoint,
+    new DefaultAzureCredential());
+    
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
