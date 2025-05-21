@@ -21,8 +21,8 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Configure environment variables and port
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:80
+EXPOSE 80
 
 # Start the app
 ENTRYPOINT ["dotnet", "MerchStore.WebUI.dll"]
