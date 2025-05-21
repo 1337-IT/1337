@@ -4,7 +4,7 @@
 
 This is a full-stack .NET web application containerized with Docker and hosted on Docker Hub.
 
-## 🔽 Pull the Image
+## 🔽 Pull the Image.
 
 ```bash
 docker pull muhammadaamir11/merchstore:net9
