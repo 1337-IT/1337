@@ -20,10 +20,10 @@ builder.Configuration
     .AddEnvironmentVariables();
 
 // Add Azure Key Vault configuration
-var keyVaultEndpoint = new Uri($"https://merchstorekeyvault123456.vault.azure.net/");
-builder.Configuration.AddAzureKeyVault(
-    keyVaultEndpoint,
-    new DefaultAzureCredential());
+//var keyVaultEndpoint = new Uri($"https://merchstorekeyvault123456.vault.azure.net/");
+//builder.Configuration.AddAzureKeyVault(
+  //  keyVaultEndpoint,
+    //new DefaultAzureCredential());
     
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
