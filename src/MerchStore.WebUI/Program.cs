@@ -11,13 +11,8 @@ using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeed
 using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 
-var builder = WebApplication.CreateBuilder(args);
 
-// Add Azure Key Vault configuration
-var keyVaultEndpoint = new Uri($"https://fanta-stick6-vault.vault.azure.net/");
-builder.Configuration.AddAzureKeyVault(
-    keyVaultEndpoint,
-    new DefaultAzureCredential());
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
