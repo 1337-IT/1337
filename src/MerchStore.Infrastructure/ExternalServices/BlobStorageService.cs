@@ -25,6 +25,7 @@ public class BlobStorageService
         await blobClient.UploadAsync(stream, overwrite: true);
 
         return blobClient.Uri.ToString();
+        
     }
 }
 
