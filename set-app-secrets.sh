@@ -30,3 +30,4 @@ az webapp config appsettings set \
     BlobStorage__ContainerName="$blobContainer"
 
 echo "✅ Secrets injected for $appname"
+
