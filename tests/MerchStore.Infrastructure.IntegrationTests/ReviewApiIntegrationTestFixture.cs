@@ -1,6 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MerchStore.Infrastructure;
+using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations;
+using MerchStore.Infrastructure.ExternalServices.Reviews.Models;
 
 namespace MerchStore.Infrastructure.IntegrationTests;
 
@@ -42,7 +45,7 @@ public class ReviewApiIntegrationTestFixture : IDisposable
         // This registers ReviewApiOptions, HttpClient for ReviewApiClient,
         // MockReviewService, and ExternalReviewRepository as IReviewRepository etc.
         // It reads the "ReviewApi" section from the Configuration built above.
-        services.AddReviewServices(Configuration);
+       /* services.AddReviewServices(Configuration); */
         // --- --- --- --- --- --- --- --- ---
 
         // Build the service provider
