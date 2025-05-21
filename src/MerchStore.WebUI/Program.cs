@@ -5,18 +5,14 @@ using MerchStore.Infrastructure;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Azure.Identity;
+using Microsoft.Extensions.Configuration;
 using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeeder
 using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
