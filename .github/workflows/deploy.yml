@@ -32,15 +32,14 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: 🔐 Fetch secrets from Azure Key Vault
-      uses: azure/get-keyvault-secrets@v1
-      with:
-        keyvault: ${{ env.AZURE_KEYVAULT_NAME }}
-        secrets: |
-          CosmosDbSettings--ConnectionString
-          BlobStorage--ConnectionString
-          ReviewApi--ApiKey
-          ApiKey--Value
+    - name: 🔐 Manually fetch secrets from Azure Key Vault
+      run: |
+        echo "Fetching secrets with Azure CLI..."
+
+        echo "CosmosDbSettings__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name CosmosDbSettings--ConnectionString --query value -o tsv)" >> $GITHUB_ENV
+        echo "BlobStorage__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name BlobStorage--ConnectionString --query value -o tsv)" >> $GITHUB_ENV
+        echo "ReviewApi__ApiKey=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ReviewApi--ApiKey --query value -o tsv)" >> $GITHUB_ENV
+        echo "ApiKey__Value=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ApiKey--Value --query value -o tsv)" >> $GITHUB_ENV
 
     - name: ⚙️ Set App Settings in Azure
       run: |
