@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ========== CONFIGURATION ==========
-appname="fanta-stick6"  
+appname="fanta-stick-six"  
 resourceGroup="MerchStoreRG-deployment"
 planName="MerchStorePlan"
 location="swedencentral"
