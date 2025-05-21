@@ -36,4 +36,4 @@ jobs:
         az webapp config container set \
           --name $AZURE_WEBAPP_NAME \
           --resource-group $AZURE_RESOURCE_GROUP \
-          --docker-image-name $DOCKER_IMAGE:latest
+          --container-image-name $DOCKER_IMAGE:latest
