@@ -47,7 +47,7 @@ jobs:
           --name $AZURE_WEBAPP_NAME \
           --resource-group $AZURE_RESOURCE_GROUP \
           --settings \
-          EnableSwagger: "true" \,
+          EnableSwagger: "true" \
           CosmosDbSettings__ConnectionString="${{ env.CosmosDbSettings__ConnectionString }}" \
           BlobStorage__ConnectionString="${{ env.BlobStorage__ConnectionString }}" \
           ReviewApi__ApiKey="${{ env.ReviewApi__ApiKey }}" \
