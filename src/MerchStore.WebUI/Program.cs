@@ -121,18 +121,44 @@ if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("Us
     var seeder = scope.ServiceProvider.GetRequiredService<ICatalogSeeder>();
     await seeder.SeedAsync();
 }
+
+// Configure HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    // Development-specific middleware
+    app.UseDeveloperExceptionPage();
+}
 else
 {
+    // Production-specific middleware
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+// Check if Swagger should be enabled (controlled by configuration)
+var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger", true); // Default to true
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+if (enableSwagger)
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-});
-
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+        options.RoutePrefix = "swagger"; // Swagger UI at /swagger
+        
+        // Additional production settings
+        if (!app.Environment.IsDevelopment())
+        {
+            // Add authentication for Swagger in production (optional)
+            options.DocumentTitle = "MerchStore API - Production";
+        }
+    });
+    
+    Console.WriteLine($"✅ Swagger UI enabled at: /swagger (Environment: {app.Environment.EnvironmentName})");
+}
+else
+{
+    Console.WriteLine("❌ Swagger UI is disabled via configuration");
+}
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseSession();
