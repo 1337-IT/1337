@@ -123,6 +123,7 @@ if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("Us
     using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<ICatalogSeeder>();
     await seeder.SeedAsync();
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -139,6 +140,7 @@ else
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
     });
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseSession();
