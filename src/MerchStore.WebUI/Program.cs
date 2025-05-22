@@ -135,7 +135,7 @@ else
     app.UseHsts();
 }
 // Check if Swagger should be enabled (controlled by configuration)
-var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger", true); // Default to true
+var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger", true); // Default to true.
 
 if (enableSwagger)
 {
