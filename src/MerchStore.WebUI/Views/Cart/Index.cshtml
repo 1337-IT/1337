@@ -1,10 +1,7 @@
 @model List<MerchStore.Domain.Entities.CartItem>
-@using System.Globalization
 
 @{
     ViewData["Title"] = "Shopping Cart";
-    CultureInfo.CurrentCulture = new CultureInfo("sv-SE");
-    CultureInfo.CurrentUICulture = new CultureInfo("sv-SE");
 }
 
 @if (TempData["ToastMessage"] is string msg)
