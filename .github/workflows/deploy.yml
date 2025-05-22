@@ -36,10 +36,10 @@ jobs:
       run: |
         echo "Fetching secrets with Azure CLI..."
 
-        echo "CosmosDbSettings__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name CosmosDbSettings--ConnectionString --query value -o tsv)" >> $GITHUB_ENV
-        echo "BlobStorage__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name BlobStorage--ConnectionString --query value -o tsv)" >> $GITHUB_ENV
-        echo "ReviewApi__ApiKey=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ReviewApi--ApiKey --query value -o tsv)" >> $GITHUB_ENV
-        echo "ApiKey__Value=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ApiKey--Value --query value -o tsv)" >> $GITHUB_ENV
+        echo "CosmosDbSettings__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name CosmosDbSettings__ConnectionString --query value -o tsv)" >> $GITHUB_ENV
+        echo "BlobStorage__ConnectionString=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name BlobStorage__ConnectionString --query value -o tsv)" >> $GITHUB_ENV
+        echo "ReviewApi__ApiKey=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ReviewApi__ApiKey --query value -o tsv)" >> $GITHUB_ENV
+        echo "ApiKey__Value=$(az keyvault secret show --vault-name $AZURE_KEYVAULT_NAME --name ApiKey__Value --query value -o tsv)" >> $GITHUB_ENV
 
     - name: ⚙️ Set App Settings in Azure
       run: |
@@ -47,11 +47,12 @@ jobs:
           --name $AZURE_WEBAPP_NAME \
           --resource-group $AZURE_RESOURCE_GROUP \
           --settings \
-          EnableSwagger=true \
-          CosmosDbSettings__ConnectionString="${{ env.CosmosDbSettings__ConnectionString }}" \
-          BlobStorage__ConnectionString="${{ env.BlobStorage__ConnectionString }}" \
-          ReviewApi__ApiKey="${{ env.ReviewApi__ApiKey }}" \
-          ApiKey__Value="${{ env.ApiKey__Value }}"
+            EnableSwagger=true \
+            UseInMemoryDb=false \
+            CosmosDbSettings__ConnectionString="${{ env.CosmosDbSettings__ConnectionString }}" \
+            BlobStorage__ConnectionString="${{ env.BlobStorage__ConnectionString }}" \
+            ReviewApi__ApiKey="${{ env.ReviewApi__ApiKey }}" \
+            ApiKey__Value="${{ env.ApiKey__Value }}"
 
     - name: 🚀 Deploy to Azure App Service
       run: |
