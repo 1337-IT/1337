@@ -48,10 +48,7 @@ builder.Services.AddAuthorization(options =>
 // Application & Infrastructure
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
 builder.Services.AddSingleton<MerchStore.Infrastructure.Storage.BlobStorageService>();
-
-
 
 // Log the current repository mode
 if (builder.Configuration.GetValue<bool>("UseInMemoryDb"))
@@ -123,23 +120,18 @@ if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("Us
     using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<ICatalogSeeder>();
     await seeder.SeedAsync();
-
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-    });
 }
 else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-    });
 }
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();
