@@ -114,6 +114,9 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+// Custom middleware to set the culture
+app.UseCustomCulture("sv-SE");
+
 // 🌱 Seed Cosmos DB in Development (only when not using in-memory)
 if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("UseInMemoryDb"))
 {
