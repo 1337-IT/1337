@@ -1,31 +1,33 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies; // ✅ THIS LINE
+using Azure.Identity;
 using MerchStore.Application;
+using MerchStore.Application.Common.Interfaces;
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.Entities;
 using MerchStore.Infrastructure;
+using MerchStore.Infrastructure.ExternalServices;
+using MerchStore.WebUI;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Infrastructure;
-using Microsoft.OpenApi.Models;
-using Azure.Identity;
-using Microsoft.Extensions.Configuration;
-using MerchStore.Application.Common.Interfaces; // ✅ Required for ICatalogSeeder
-using MerchStore.Infrastructure.ExternalServices; // ✅ For BlobStorageService
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load config
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables()
+    .AddAzureKeyVault(new Uri("https://merchstorekeyvault123456.vault.azure.net/"), new DefaultAzureCredential());
 
-// Add Azure Key Vault configuration
-//var keyVaultEndpoint = new Uri($"https://merchstorekeyvault123456.vault.azure.net/");
-//builder.Configuration.AddAzureKeyVault(
-  //  keyVaultEndpoint,
-    //new DefaultAzureCredential());
-    
-// Add services to the container.
+// Add services
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
@@ -33,31 +35,48 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// Add API Key authentication
-builder.Services.AddAuthentication()
-   .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
+// 🔐 API Key
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "UserCookie"; // or "AdminCookie" depending on who logs in first
+})
+.AddCookie("UserCookie", options =>
+{
+    options.LoginPath = "/User/Login";
+    options.AccessDeniedPath = "/User/Login";
+})
+.AddCookie("AdminCookie", options =>
+{
+    options.LoginPath = "/Admin/Login";
+    options.AccessDeniedPath = "/Admin/AccessDenied";
+})
+.AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key not configured"));
 
-// Add API Key authorization
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ApiKeyPolicy", policy =>
-        policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
-              .RequireAuthenticatedUser());
+        policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme).RequireAuthenticatedUser());
+
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
 });
 
-// Application & Infrastructure
+// App Services
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddWebUI();
 builder.Services.AddSingleton<MerchStore.Infrastructure.Storage.BlobStorageService>();
 
-// Log the current repository mode
-if (builder.Configuration.GetValue<bool>("UseInMemoryDb"))
-    Console.WriteLine("🧪 Using In-Memory Product Repository");
-else
-    Console.WriteLine("🌐 Using Azure Cosmos DB (Mongo API)");
-
-// 🔧 Register HttpClient for ExternalReviewRepository
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
+// Debug which repository is in use
+Console.WriteLine(builder.Configuration.GetValue<bool>("UseInMemoryDb")
+    ? "🧪 Using In-Memory Product Repository"
+    : "🌐 Using Azure Cosmos DB (Mongo API)");
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -77,14 +96,11 @@ builder.Services.AddSwaggerGen(options =>
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        options.IncludeXmlComments(xmlPath);
-    }
+    if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
 
     options.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
-        Description = "API Key Authentication. Enter your API key in the field below.",
+        Description = "API Key Authentication. Enter your API key.",
         Name = ApiKeyAuthenticationDefaults.HeaderName,
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -94,27 +110,9 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddAuthentication("AdminCookie")
-    .AddCookie("AdminCookie", options =>
-    {
-        options.LoginPath = "/Admin/Login";
-        options.AccessDeniedPath = "/Admin/AccessDenied";
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
-});
-
-
 var app = builder.Build();
 
-// 🌱 Seed Cosmos DB in Development (only when not using in-memory)
+// 🌱 Seed Catalog
 if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("UseInMemoryDb"))
 {
     using var scope = app.Services.CreateScope();
@@ -122,53 +120,51 @@ if (app.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("Us
     await seeder.SeedAsync();
 }
 
-// Configure HTTP request pipeline
-if (app.Environment.IsDevelopment())
+// 🛂 Ensure Admin User
+using (var scope = app.Services.CreateScope())
 {
-    // Development-specific middleware
-    app.UseDeveloperExceptionPage();
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+    var existingAdmin = await userRepo.GetByUsernameAsync("admin");
+    if (existingAdmin == null)
+    {
+        await authService.RegisterUserAsync("admin", "admin123", "Admin");
+        Console.WriteLine("✅ Admin user created!");
+    }
+    else
+    {
+        Console.WriteLine("ℹ️ Admin already exists.");
+    }
 }
+
+// Middleware
+if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 else
 {
-    // Production-specific middleware
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-// Check if Swagger should be enabled (controlled by configuration)
-var enableSwagger = builder.Configuration.GetValue<bool>("EnableSwagger", true); // Default to true.
 
-if (enableSwagger)
+if (builder.Configuration.GetValue<bool>("EnableSwagger", true))
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    app.UseSwaggerUI(c =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
-        options.RoutePrefix = "swagger"; // Swagger UI at /swagger
-        
-        // Additional production settings
-        if (!app.Environment.IsDevelopment())
-        {
-            // Add authentication for Swagger in production (optional)
-            options.DocumentTitle = "MerchStore API - Production";
-        }
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+        c.RoutePrefix = "swagger";
     });
-    
-    Console.WriteLine($"✅ Swagger UI enabled at: /swagger (Environment: {app.Environment.EnvironmentName})");
 }
-else
-{
-    Console.WriteLine("❌ Swagger UI is disabled via configuration");
-}
+
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

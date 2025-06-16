@@ -20,7 +20,6 @@ public static class DependencyInjection
         services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage")); // ✅ Add blob storage config
         services.Configure<ReviewApiOptions>(configuration.GetSection("ReviewApi")); // ✅ Add review API config
 
-
         var useInMemory = configuration.GetValue<bool>("UseInMemoryDb");
 
         if (useInMemory)
@@ -32,6 +31,7 @@ public static class DependencyInjection
         {
             // 🌐 Cosmos DB for production
             services.AddScoped<IProductRepository, CosmosProductRepository>();
+            services.AddScoped<IUserRepository, CosmosUserRepository>(); // ✅ Now placed correctly inside the method
         }
 
         // Register review dependencies
@@ -44,7 +44,6 @@ public static class DependencyInjection
 
         // ✅ Register blob upload service
         services.AddScoped<BlobStorageService>();
-        
 
         return services;
     }
